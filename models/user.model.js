@@ -1,5 +1,5 @@
-const { Schema, Types, models, model } = require("mongoose");
-const bcrypt = require("bcrypt");
+const { Schema, Types, models, model } = require("mongoose")
+const bcrypt = require("bcrypt")
 
 const userSchema = new Schema(
   {
@@ -17,6 +17,22 @@ const userSchema = new Schema(
       enum: ["user", "admin"],
       default: "user",
     },
+    votes: [
+      {
+        position: {
+          type: Types.ObjectId,
+          ref: "Position",
+        },
+        candidate: {
+          type: String,
+          required: true,
+        },
+        votedAt: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
     votedFor: {
       type: Types.ObjectId,
       ref: "Vote",
@@ -24,18 +40,18 @@ const userSchema = new Schema(
   },
   {
     timestamps: true,
-  }
-);
+  },
+)
 
 userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
-  this.password = await bcrypt.hash(this.password, 10);
-});
+  if (!this.isModified("password")) return next()
+  this.password = await bcrypt.hash(this.password, 10)
+})
 
 userSchema.methods.comparePassword = async function (password) {
-  return await bcrypt.compare(password, this.password);
-};
+  return await bcrypt.compare(password, this.password)
+}
 
-const User = models.User || model("User", userSchema);
+const User = models.User || model("User", userSchema)
 
-module.exports = User;
+module.exports = User
